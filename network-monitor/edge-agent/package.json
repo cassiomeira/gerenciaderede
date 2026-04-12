@@ -1,0 +1,29 @@
+{
+  "name": "edge-agent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "build": "tsc",
+    "bundle": "esbuild src/index.ts --bundle --platform=node --outfile=dist/bundle.js",
+    "compile:win": "npm run bundle && pkg dist/bundle.js --targets node18-win-x64 --output dist/NetMonitorAgent.exe"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@types/ws": "^8.18.1",
+    "axios": "^1.13.6",
+    "dotenv": "^17.3.1",
+    "ping": "^1.0.0",
+    "ws": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "esbuild": "^0.27.4",
+    "pkg": "^5.8.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.2"
+  }
+}

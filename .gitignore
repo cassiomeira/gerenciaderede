@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+
+# Environment variables (contém senhas e tokens)
+.env
+
+# Build output
+dist/
+build/
+
+# Database files
+*.db
+*.db-journal
+data/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+
+# WhatsApp session and cache
+whatsapp-session/
+.wwebjs_cache/
+.wwebjs_auth/
+
+# Backups locais
+backups/
+
+# Dude database (binário grande)
+dude/
+dude.rar
+
+# RAR files
+*.rar
+
+# Puppeteer/Chrome
+.local-chromium/

@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+      - "40000-40100:40000-40100" # Portas temporárias para o Túnel Reverso do Winbox
+    volumes:
+      - ./data:/app/prisma/data
+      - ./keys:/app/keys
+    environment:
+      - NODE_ENV=production
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=NETMONITOR_SECRET_PROD
+    restart: unless-stopped
+    depends_on:
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_BASE_URL=http://<COOLIFY_IP>:3001/api # Substitua pela URL final do backend
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+
+volumes:
+  redis-data:

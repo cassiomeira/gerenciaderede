@@ -1,0 +1,82 @@
+# =========================================================================
+# SCRIPT SUPREMO: FIREWALL, WINBOX, SNMP E RELOGIO
+# =========================================================================
+
+# 1. SERVICOS E PROTECAO
+/ip service set api address=177.184.176.1/32,177.184.190.250/32,177.184.190.27/32,217.216.86.231/32,45.229.107.79/32,192.168.13.230/32,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12 disabled=no port=8728
+/ip service set api-ssl address=177.184.176.1/32,177.184.190.250/32,177.184.190.27/32,217.216.86.231/32,45.229.107.79/32,192.168.13.230/32,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12 disabled=no port=8729
+/ip service set ssh address=177.184.176.1/32,177.184.190.250/32,177.184.190.27/32,217.216.86.231/32,45.229.107.79/32,192.168.13.230/32,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12 disabled=no port=22
+/ip service set winbox disabled=no port=8291
+
+/snmp set enabled=yes contact="NOC Netcar" location="Torre" trap-version=2
+/snmp community remove [find]
+/snmp community add name=N3tc@rSNMP read-access=yes
+/system logging add topics=firewall action=memory
+
+/ip firewall filter
+add chain=input src-address=177.184.176.1 protocol=tcp dst-port=22 action=accept comment="GERENCIA-SSH-1"
+add chain=input src-address=177.184.190.250 protocol=tcp dst-port=22 action=accept comment="GERENCIA-SSH-2"
+add chain=input src-address=177.184.190.27 protocol=tcp dst-port=22 action=accept comment="GERENCIA-SSH-3"
+add chain=input src-address=217.216.86.231 protocol=tcp dst-port=22 action=accept comment="GERENCIA-SSH-4"
+add chain=input src-address=45.229.107.79 protocol=tcp dst-port=22 action=accept comment="GERENCIA-SSH-5"
+add chain=input src-address=192.168.13.230 action=accept comment="SERVER-MONITOR-FULL-ACCESS"
+add chain=input src-address=10.0.0.0/8 protocol=tcp dst-port=22 action=accept comment="REDE-INTERNA-10"
+add chain=input src-address=192.168.0.0/16 protocol=tcp dst-port=22 action=accept comment="REDE-INTERNA-192"
+add chain=input src-address=172.16.0.0/12 protocol=tcp dst-port=22 action=accept comment="REDE-INTERNA-172"
+add action=accept chain=input comment="Allow Winbox" dst-port=8291 protocol=tcp
+add action=accept chain=input comment="Allow Ping" protocol=icmp
+add action=drop chain=input comment="Drop Invalid connections" connection-state=invalid
+
+# 2. DATA/HORA
+/system ntp client set enabled=yes primary-ntp=200.160.7.186 secondary-ntp=200.160.0.8
+/system clock set time-zone-name=America/Sao_Paulo
+
+# 3. LIMPEZA (Remove agendamentos de backup das tentativas anteriores)
+/system script remove [find name="auto_backup_ftp"]
+/system scheduler remove [find name="schedule_backup_ftp"]
+/
+# Remove versoes antigas para nao duplicar
+/system script remove [find name="BackupAutoFTP"]
+/system scheduler remove [find name="Rotina_Backup_3AM"]
+
+# Cria o Script Inteligente
+/system script add name="BackupAutoFTP" policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive source="# --- 1. Lista de interfaces por ordem de prioridade ---\r\
+\n:local interfaces {\"bdg_wan\"; \"ether1\"; \"wlan1\"; \"lo\"; \"sfp1\"; \"sfpplus1\"; \"bdg_lan\"}\r\
+\n:local ipComMascara \"0.0.0.0/0\"\r\
+\n:local achouIP false\r\
+\n\r\
+\n# --- 2. Busca automatica e inteligente nas interfaces ---\r\
+\n:foreach int in=\$interfaces do={\r\
+\n    :if (!\$achouIP) do={\r\
+\n        :local idBusca [/ip address find interface=\$int]\r\
+\n        :if ([:len \$idBusca] > 0) do={\r\
+\n            :set ipComMascara [/ip address get [:pick \$idBusca 0] address]\r\
+\n            :set achouIP true\r\
+\n        }\r\
+\n    }\r\
+\n}\r\
+\n\r\
+\n# --- 3. Remove a mascara e monta o nome do arquivo ---\r\
+\n:local ipSemMascara [:pick \$ipComMascara 0 [:find \$ipComMascara \"/\"]]\r\
+\n:local nomeBase ([/system identity get name] . \"_\" . \$ipSemMascara)\r\
+\n\r\
+\n# --- 4. Backup em formato texto (.rsc) ---\r\
+\n:global namefilersc (\$nomeBase . \".rsc\")\r\
+\n/export file=\$namefilersc\r\
+\n:delay 10s\r\
+\n/tool fetch address=217.216.86.231 user=matrix password=suporte10025 src-path=\"\$namefilersc\" mode=ftp upload=yes port=21 dst-path=\"Backup_Mikrotik/\$namefilersc\"\r\
+\n:delay 50s\r\
+\n/file remove \$namefilersc\r\
+\n\r\
+\n# --- 5. Backup binario (.backup) ---\r\
+\n:global namefilebkp (\$nomeBase . \".backup\")\r\
+\n/system backup save name=\$namefilebkp password=10025-MATRIX\r\
+\n:delay 10s\r\
+\n/tool fetch address=192.168.13.2 user=Netcar password=1957ntc src-path=\"\$namefilebkp\" mode=ftp upload=yes port=21 dst-path=\"Backup_Mikrotik/\$namefilebkp\"\r\
+\n:delay 50s\r\
+\n/file remove \$namefilebkp"
+
+# Cria o Agendamento
+/system scheduler add name="Rotina_Backup_3AM" start-time=03:00:00 interval=1d on-event="BackupAutoFTP" policy=ftp,reboot,read,write,policy,test,password,sniff,sensitive
+
+:put "Script e Agendamento instalados com sucesso!"

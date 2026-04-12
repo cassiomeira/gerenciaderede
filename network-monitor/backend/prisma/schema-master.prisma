@@ -1,0 +1,39 @@
+generator client {
+  provider   = "prisma-client-js"
+  output     = "../node_modules/.prisma/master-client"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./master.db"
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique // ex: "netcar-telecom"
+  dbPath    String   // Caminho absoluto do tenant.db
+  csvPath   String?  // Caminho do CSV de dispositivos
+  ixcUrl    String?  // URL da API IXC
+  ixcToken  String?  // Token da API IXC
+  openaiKey String?  // Chave da OpenAI
+  active    Boolean  @default(true)
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // bcrypt hash
+  name      String
+  role      String   @default("USER") // ADMIN, USER
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+}

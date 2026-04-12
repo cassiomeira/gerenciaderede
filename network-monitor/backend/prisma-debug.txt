@@ -1,0 +1,28 @@
+
+[DB] Creating NEW Prisma instance for: c:\aplicativos\gerenciaderede\gerenciaderede
+etwork-monitor\backend\data
+etcar-telecom\tenant.db -> URL: file:///C:/aplicativos/gerenciaderede/gerenciaderede
+etwork-monitor/backend/data
+etcar-telecom/tenant.db
+
+[DB] Creating NEW Prisma instance for: c:\aplicativos\gerenciaderede\gerenciaderede\network-monitor\backend\data\netcar-telecom\tenant.db -> URL: file:///C:/aplicativos/gerenciaderede/gerenciaderede/network-monitor/backend/data/netcar-telecom/tenant.db
+
+[DB] Creating NEW Prisma instance for: c:\aplicativos\gerenciaderede\gerenciaderede\network-monitor\backend\data\netcar-telecom\tenant.db -> URL: file:///C:/aplicativos/gerenciaderede/gerenciaderede/network-monitor/backend/data/netcar-telecom/tenant.db
+
+[DB] Creating NEW Prisma instance for: c:\aplicativos\gerenciaderede\gerenciaderede\network-monitor\backend\data\netcar-telecom\tenant.db -> URL: file:///C:/aplicativos/gerenciaderede/gerenciaderede/network-monitor/backend/data/netcar-telecom/tenant.db
+
+[DB] Creating NEW Prisma instance for: c:\aplicativos\gerenciaderede\gerenciaderede\network-monitor\backend\data\netcar-telecom\tenant.db -> URL: file:///C:/aplicativos/gerenciaderede/gerenciaderede/network-monitor/backend/data/netcar-telecom/tenant.db
+
+[DB] Creating NEW Prisma instance for: c:\aplicativos\gerenciaderede\gerenciaderede\network-monitor\backend\data\netcar-telecom\tenant.db -> URL: file:///C:/aplicativos/gerenciaderede/gerenciaderede/network-monitor/backend/data/netcar-telecom/tenant.db
+
+[DB] Creating NEW Prisma instance for: c:\aplicativos\gerenciaderede\gerenciaderede\network-monitor\backend\data\netcar-telecom\tenant.db -> URL: file:///C:/aplicativos/gerenciaderede/gerenciaderede/network-monitor/backend/data/netcar-telecom/tenant.db
+
+[DB] Creating NEW Prisma instance for: c:\aplicativos\gerenciaderede\gerenciaderede\network-monitor\backend\data\netcar-telecom\tenant.db -> URL: file:///C:/aplicativos/gerenciaderede/gerenciaderede/network-monitor/backend/data/netcar-telecom/tenant.db
+
+[DB] Creating NEW Prisma instance for: c:\aplicativos\gerenciaderede\gerenciaderede\network-monitor\backend\data\netcar-telecom\tenant.db -> URL: file:///C:/aplicativos/gerenciaderede/gerenciaderede/network-monitor/backend/data/netcar-telecom/tenant.db
+
+[DB] Creating NEW Prisma instance for: c:\aplicativos\gerenciaderede\gerenciaderede\network-monitor\backend\data\netcar-telecom\tenant.db -> URL: file:///C:/aplicativos/gerenciaderede/gerenciaderede/network-monitor/backend/data/netcar-telecom/tenant.db
+
+[DB] Creating NEW Prisma instance for: c:\aplicativos\gerenciaderede\gerenciaderede\network-monitor\backend\data\netcar-telecom\tenant.db -> URL: file:///C:/aplicativos/gerenciaderede/gerenciaderede/network-monitor/backend/data/netcar-telecom/tenant.db
+
+[DB] Creating NEW Prisma instance for: c:\aplicativos\gerenciaderede\gerenciaderede\network-monitor\backend\data\netcar-telecom\tenant.db -> URL: file:///C:/aplicativos/gerenciaderede/gerenciaderede/network-monitor/backend/data/netcar-telecom/tenant.db

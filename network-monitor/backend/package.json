@@ -1,0 +1,61 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "prisma:push": "npx prisma db push"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^6.19.2",
+    "@types/net-snmp": "^3.23.0",
+    "@types/ssh2": "^1.15.5",
+    "@types/ws": "^8.18.1",
+    "archiver": "^7.0.1",
+    "axios": "^1.13.6",
+    "basic-ftp": "^5.2.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "csv-parse": "^6.1.0",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "googleapis": "^171.4.0",
+    "jsonwebtoken": "^9.0.3",
+    "net-snmp": "^3.26.1",
+    "node-cron": "^4.2.1",
+    "openai": "^6.32.0",
+    "ping": "^1.0.0",
+    "puppeteer": "^24.40.0",
+    "qrcode": "^1.5.4",
+    "sqlite3": "^6.0.1",
+    "ssh2": "^1.17.0",
+    "whatsapp-web.js": "^1.34.6",
+    "ws": "^8.20.0"
+  },
+  "devDependencies": {
+    "@types/archiver": "^7.0.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.4.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/pino": "^7.0.4",
+    "@types/qrcode": "^1.5.6",
+    "nodemon": "^3.1.14",
+    "prisma": "^6.19.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  },
+  "bundleDependencies": [
+    "whatsapp-web.js"
+  ]
+}

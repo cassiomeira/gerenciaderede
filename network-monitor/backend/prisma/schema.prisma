@@ -1,0 +1,247 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AccessPoint {
+  id             String   @id @default(uuid())
+  ixcId          Int?     @unique // ID do Transmissor no IXC
+  description    String
+  ip             String   @unique
+  equipmentType  String?  // Mikrotik, Intelbras
+  status         String   @default("ONLINE") // ONLINE, OFFLINE
+  sshUser        String?
+  sshPass        String?
+  sshPort        Int?     @default(22)
+  lastSshStatus  String?  @default("NOT_CONFIGURED") // NOT_CONFIGURED, SUCCESS, FAILED
+  wirelessMode   String?  // Ex: ap-bridge, station-bridge, bridge
+  clients        Client[]
+  logs           RadioLog[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Client {
+  id             String   @id @default(uuid())
+  ixcId          Int?     @unique
+  ixcClientId    Int?
+  login          String   
+  mac            String   
+  name           String?
+  contractId     Int?
+  ip             String?
+  concentratorIp String?
+  planName       String?
+  contractStatus String?
+  transmitterId  Int?
+  apId           String?
+  ap             AccessPoint? @relation(fields: [apId], references: [id])
+  status         String   @default("ONLINE") // Status from IXC
+  logs           RadioLog[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([mac])
+  @@index([login])
+  @@index([name])
+}
+
+model RadioLog {
+  id             String   @id @default(uuid())
+  clientId       String
+  client         Client   @relation(fields: [clientId], references: [id])
+  apId           String
+  ap             AccessPoint @relation(fields: [apId], references: [id])
+  signal         Int      // dBm, ex: -65
+  ccq            Int      // percentage, ex: 98
+  uptime         String?  // Uptime of the client on the radio
+  txRate         String?
+  rxRate         String?
+  createdAt      DateTime @default(now())
+}
+
+model Script {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  content     String   // RouterOS commands
+  isDefault   Boolean  @default(false)
+  executions  ScriptExecution[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ScriptExecution {
+  id          String   @id @default(uuid())
+  scriptId    String
+  script      Script   @relation(fields: [scriptId], references: [id])
+  apIp        String
+  apName      String?
+  status      String   @default("PENDING") // PENDING, RUNNING, SUCCESS, FAILED
+  output      String?
+  error       String?
+  createdAt   DateTime @default(now())
+}
+
+model DeviceTelemetry {
+  id              String   @id @default(uuid())
+  ip              String
+  identity        String?
+  model           String?
+  firmware        String?
+  cpuLoad         String?
+  uptime          String?
+  freeMemory      String?
+  totalMemory     String?
+  temperature     String?
+  voltage         String?
+  latency         Float?
+  // Wireless
+  wirelessMode    String?  // ap-bridge, station, etc
+  frequency       String?  // 5180MHz, 2412MHz
+  ssid            String?
+  scanList        String?
+  band            String?  // 5ghz-a/n, 2ghz-b/g/n
+  channelWidth    String?  // 20/40mhz-Ce
+  noiseFloor      String?  // -100dBm
+  signal          String?  // -60dBm
+  ccq             String?  // 90%
+  txPower         String?
+  // Interfaces (JSON stringificado com nome, velocidade, status)
+  interfaces      String?  // JSON: [{name, speed, status, running}]
+  // Clientes conectados
+  clientCount     Int?     @default(0)
+  clientsJson     String?  // Armazena JSON com Array de clientes (mac, signal, tx, rx)
+  // Metadados
+  collectedAt     DateTime @default(now())
+
+  @@index([ip])
+  @@index([collectedAt])
+}
+
+model TelemetryLog {
+  id              String   @id @default(uuid())
+  ip              String
+  identity        String?
+  uptime          String?
+  signal          String?
+  noiseFloor      String?
+  ccq             String?
+  latency         Float?
+  clientCount     Int?
+  collectedAt     DateTime @default(now())
+
+  @@index([ip])
+  @@index([collectedAt])
+}
+
+model NetworkMap {
+  id        String    @id @default(uuid())
+  name      String
+  nodes     MapNode[]
+  links     MapLink[]
+  alertsEnabled Boolean @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model MapNode {
+  id          String     @id @default(uuid())
+  mapId       String
+  map         NetworkMap @relation(fields: [mapId], references: [id], onDelete: Cascade)
+  accessPointId String?  // FK opcional ao AccessPoint (ip)
+  apIp        String?    // IP do dispositivo
+  label       String?    // rótulo customizado (ex: nome)
+  x           Float      @default(100)
+  y           Float      @default(100)
+  notes       String?    // Notas do usuário (ex: reconhecer problema)
+  nickname    String?    // Apelido/Microrregião
+  alertsEnabled Boolean @default(true)
+  pingEnabled   Boolean @default(true)
+  sourceLinks MapLink[]  @relation("SourceNode")
+  targetLinks MapLink[]  @relation("TargetNode")
+  createdAt   DateTime   @default(now())
+
+  @@index([mapId])
+  @@index([apIp])
+}
+
+model MapLink {
+  id           String     @id @default(uuid())
+  mapId        String
+  map          NetworkMap @relation(fields: [mapId], references: [id], onDelete: Cascade)
+  sourceNodeId String
+  sourceNode   MapNode    @relation("SourceNode", fields: [sourceNodeId], references: [id], onDelete: Cascade)
+  targetNodeId String
+  targetNode   MapNode    @relation("TargetNode", fields: [targetNodeId], references: [id], onDelete: Cascade)
+  linkType     String     @default("wireless") // wireless, ethernet, fiber
+  label        String?
+  createdAt    DateTime   @default(now())
+
+  @@index([mapId])
+}
+
+model OutageHistory {
+  id        String   @id @default(uuid())
+  nodeId    String
+  apIp      String?
+  startTime DateTime @default(now())
+  endTime   DateTime?
+  duration  Float?   // duration in seconds
+  createdAt DateTime @default(now())
+
+  @@index([nodeId])
+  @@index([apIp])
+}
+
+// ==========================================
+// MASTER DB MODELS (Multi-Tenant)
+// ==========================================
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique // ex: "netcar-telecom"
+  dbPath    String   // Caminho absoluto do tenant.db
+  csvPath   String?  // Caminho do CSV de dispositivos
+  ixcUrl    String?  // URL da API IXC
+  ixcToken  String?  // Token da API IXC
+  openaiKey String?  // Chave API OpenAI (por tenant)
+  telemetryMode String @default("CENTRAL") // CENTRAL, MIKROTIK_SCRIPT, EDGE_AGENT
+  
+  // Backup de Desastre Off-site (FTP)
+  ftpHost                  String?
+  ftpPort                  Int?     @default(21)
+  ftpUser                  String?
+  ftpPass                  String?
+  active    Boolean  @default(true)
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // bcrypt hash
+  name      String
+  role      String   @default("USER") // ADMIN, USER
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+}
+
+model Config {
+  key   String @id
+  value String
+}
