@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
-const API = `http://${window.location.hostname}:3001`;
+const API = window.location.port === '5173'
+  ? `http://${window.location.hostname}:3001`
+  : '';
 
 interface User {
   id: string;

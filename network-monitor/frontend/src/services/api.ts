@@ -3,8 +3,9 @@
  * Todas as pages devem usar este helper ao invés de `fetch` direto.
  */
 
-// Em dev: chama localhost:3001 direto. Em produção: nginx faz proxy de /api para o backend
-const API_BASE = import.meta.env.DEV
+// Em dev (porta 5173): chama localhost:3001 direto
+// Em produção: usa URL relativa (nginx faz proxy /api → backend:3001)
+const API_BASE = window.location.port === '5173'
   ? `http://${window.location.hostname}:3001`
   : '';
 

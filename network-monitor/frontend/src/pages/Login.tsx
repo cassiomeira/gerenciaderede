@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../components/AuthContext';
 import { ShieldAlert, Loader2, Eye, EyeOff, Building2, UserPlus } from 'lucide-react';
 
-const API_BASE = `http://${window.location.hostname}:3001`;
+const API_BASE = window.location.port === '5173'
+  ? `http://${window.location.hostname}:3001`
+  : '';
 
 export default function Login() {
   const { login } = useAuth();
