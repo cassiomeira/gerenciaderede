@@ -19,7 +19,10 @@ RUN npx prisma generate
 # Criar diretório de dados
 RUN mkdir -p /app/prisma/data/netcar-telecom
 
+# Definir DATABASE_URL para o Prisma
+ENV DATABASE_URL="file:/app/prisma/data/master.db"
+
 EXPOSE 3001
 
-# Rodar com tsx (sem necessidade de tsc build)
-CMD ["npx", "tsx", "src/index.ts"]
+# Startup: gerar client, criar tabelas, depois rodar
+CMD ["sh", "-c", "npx prisma generate && npx prisma db push --accept-data-loss 2>/dev/null; npx tsx src/index.ts"]
