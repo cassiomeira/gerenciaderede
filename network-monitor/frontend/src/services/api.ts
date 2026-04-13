@@ -3,7 +3,10 @@
  * Todas as pages devem usar este helper ao invés de `fetch` direto.
  */
 
-const API_BASE = `http://${window.location.hostname}:3001`;
+// Em dev: chama localhost:3001 direto. Em produção: nginx faz proxy de /api para o backend
+const API_BASE = import.meta.env.DEV
+  ? `http://${window.location.hostname}:3001`
+  : '';
 
 function getToken(): string | null {
   return localStorage.getItem('token');
