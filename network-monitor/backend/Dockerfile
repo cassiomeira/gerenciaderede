@@ -1,12 +1,3 @@
-FROM node:20-alpine AS build
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-
-COPY . .
-RUN npm run build
-
 FROM node:20-alpine
 WORKDIR /app
 
@@ -18,16 +9,17 @@ ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm install
 
-COPY --from=build /app/dist ./dist
-COPY --from=build /app/prisma ./prisma
+COPY . .
 
-# CSV será montado via volume ou baixado em runtime
+# Gerar Prisma client
+RUN npx prisma generate
 
 # Criar diretório de dados
 RUN mkdir -p /app/prisma/data/netcar-telecom
 
 EXPOSE 3001
 
-CMD ["sh", "-c", "npx prisma generate && npx prisma db push --skip-generate 2>/dev/null || true && node dist/index.js"]
+# Rodar com tsx (sem necessidade de tsc build)
+CMD ["npx", "tsx", "src/index.ts"]
