@@ -23,8 +23,7 @@ RUN npm install --omit=dev
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
 
-# Copiar CSV de dispositivos
-COPY ../dispositivos_monitoramento.csv ./dispositivos_monitoramento.csv 2>/dev/null || true
+# CSV será montado via volume ou baixado em runtime
 
 # Criar diretório de dados
 RUN mkdir -p /app/prisma/data/netcar-telecom
